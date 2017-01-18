@@ -24,7 +24,6 @@ if ($OrderId != "") {
             foreach ($rs as $dataSet) {
 
                 $OrderId = $dataSet['OrderId'];
-               
             }
         } catch (PDOExeption $e) {
             $errMsg = $e->getMessage();
@@ -80,6 +79,20 @@ if ($OrderId != "") {
                             $(this).dialog("close");
                         }
                     }
+
+                });
+
+                $(function () {
+                    $("#dialog-message").dialog({
+                        modal: true,
+                        autoOpen: false,
+                        buttons: {
+                            Ok: function () {
+                                window.location.href = 'products.php';
+                                $(this).dialog("close");
+                            }
+                        }
+                    });
                 });
 
                 $('#productinfo').hide();
@@ -248,9 +261,38 @@ if ($OrderId != "") {
                 var itemValue = itemVals.toFixed(2);
                 $('#itemValue').html(itemValue);
             }
+            
+            function checkStock()
+            {
+                $.ajax({
+
+                    url: 'ajax/products_ajax.php',
+                    cache: false,
+                    type: 'POST',
+                    data: {
+
+                        'request': 'checkStock',
+
+                    },
+                    dataType: 'json',
+                    success: function (data)
+                    {
+
+
+                    },
+                    error: function (data)
+                    {
+
+                        alert('error in calling ajax page');
+                    }
+
+                });
+            }
             function orderFinished()
             {
+                $("#dialog-message").dialog("open");
             }
+
 
         </script>
 
@@ -391,6 +433,7 @@ if ($OrderId != "") {
 
         <div id='input'>
             <div id='dialog-confirm'> </div>
+            <div id='dialog-message'> <p> Thank you! Your order has been recieved.</p></div>
             <div id='search'>
                 Your Order ID: <div id='OrderId'><?php echo $OrderId ?> <?php echo $customerName ?></div> 
                 <input type='hidden' value='<?php echo $OrderId ?> ' id='OrderId'>

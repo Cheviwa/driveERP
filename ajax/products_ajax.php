@@ -107,7 +107,7 @@ if ($request == "searchItems") {
 }
 if ($request == "gettingProducts") {
     if ($sqlConnection != null) { {
-            $sqlQuery = "SELECT ProductDescShort,ProductCode, Cost, productImagePath FROM product WHERE ProductId = $productId ";
+            $sqlQuery = "SELECT ProductDescShort,ProductCode, RRP, productImagePath FROM product WHERE ProductId = $productId ";
         }
         //echo $sqlQuery;
         try {
@@ -119,7 +119,7 @@ if ($request == "gettingProducts") {
                 foreach ($rs as $dataSet) {
 
                     $productDescriptshrt = $dataSet['ProductDescShort'];
-                    $Cost = $dataSet['Cost'];
+                    $RRP = $dataSet['RRP'];
                     $prodImagePath = $dataSet['productImagePath'];
                     $productCode = $dataSet['ProductCode'];
                 }
@@ -131,17 +131,36 @@ if ($request == "gettingProducts") {
     }
     $jsonVal->errMsg = $errMsg;
     $jsonVal->productDescriptshrt = $productDescriptshrt;
-    $jsonVal->Cost = $Cost;
+    $jsonVal->RRP = $RRP;
     $jsonVal->productCode = $productCode;
 }
+if ($request == "checkStock") {
+    if ($sqlConnection != null) { 
+            $sqlQuery = "SELECT Stock WHERE ProductId= $productId ";
+        }
+        //echo $sqlQuery;
+        try {
+
+            $result = $sqlConnection->prepare($sqlQuery);
+            $result->execute();
+            $rs = $result->fetchAll();
+        }
+            
+         catch (PDOExeption $e) {
+            $errMsg = $e->getMessage();      //set error message
+            $errFlg = 1;
+        }
+        $jsonVal->errMsg = $errMsg;
+    }
 
 
 if ($request == "addItems") {
     //code to make sure the user's input is inserted into the database table
     if ($sqlConnection != null) { {
             //code to make sure the user's input is inserted into the database table
+        
 
-            $sqlQuery = "INSERT INTO OrderItems(productId, quantity,price) VALUES ($productId, $quantity,$price )";
+            $sqlQuery = "INSERT INTO OrderItems(OrderId,productId, quantity,price) VALUES ($OrderId,$productId, $quantity,$price )";
             
         }
         //echo $sqlQuery;
@@ -156,7 +175,7 @@ if ($request == "addItems") {
             $errFlg = 1;
         }
         
-        $sqlQuery = "SELECT ProductDescShort, Cost AS price, Cost * $quantity AS itemValue, $quantity AS qty FROM product WHERE ProductId = $productId";
+        $sqlQuery = "SELECT ProductDescShort, RRP AS price, RRP * $quantity AS itemValue, $quantity AS qty FROM product WHERE ProductId = $productId";
 //echo $sqlQuery;
 
         try {
@@ -174,12 +193,12 @@ if ($request == "addItems") {
             $errMsg = $e->getMessage();      //set error message
             $errFlg = 1;
         }
-        
-        //echo $sqlQuery;
-    }
+       
     $jsonVal->errMsg = $errMsg;
     $jsonVal->resultArray = $rs;
+    }
 }
+
 
 
 
