@@ -3,13 +3,15 @@ $sqlConnection = null;
 include_once 'config.php';
 $OrderId = $_POST['OrderId'];
 
-if ($OrderId != "")  {
+if ($OrderId != "") {
     //amending a product
     $sqlConnection = connectToDatabase();
     if ($sqlConnection != null) {
 
 
         $sqlQuery = "SELECT * FROM OrderHeader WHERE OrderId = $OrderId";
+        $sqlQuery = "SELECT CustomerName FROM Customers WHERE customerId ";
+
 //echo $sqlQuery;
         //$results = sqlsrv_query($sqlConnection,$sqlQuery);
 
@@ -21,18 +23,17 @@ if ($OrderId != "")  {
             //print_r($rs);
             foreach ($rs as $dataSet) {
 
-            $OrderId = $dataSet['OrderId'];
-
+                $OrderId = $dataSet['OrderId'];
+                $customerId = $dataSet['CustomerId'];
+            }
+        } catch (PDOExeption $e) {
+            $errMsg = $e->getMessage();
+            $errFlg = 1;
         }
-
-     } catch (PDOExeption $e) {
-        $errMsg = $e->getMessage();
-        $errFlg = 1;
+    } else {
+        $errMsg = "No product Found";
+        $errFlag = 1;
     }
-} else {
-    $errMsg = "No product Found";
-    $errFlag = 1;
-}
 }
 ?>
 <html>
@@ -45,11 +46,30 @@ if ($OrderId != "")  {
         <link rel='stylesheet' type='text/css' href= 'jquery/jquery-ui.min.css'>
         <script>
             $(document).ready(function () {
+                $("#dialog-confirm").dialog({
+                resizable: false,
+                height: 200,
+                width: 500,
+                modal: true,
+                autoOpen: false,
+                buttons: {
+                    "Yes": function () {
+                       
+                        $(this).dialog("close");
+                    },
+                    Cancel: function () {
+                         $('#productinfo').hide();
+                         
+                        $(this).dialog("close");
+                    }
+                }
+            });
 
                 $('#productinfo').hide();
                 $('#itemsBasket').hide();
 
             });
+            
             function addAnotherprod()
             {
                 $('#input').show();
@@ -58,6 +78,8 @@ if ($OrderId != "")  {
 
             var char;
             var totsOrder = 0;
+            var prdctDescShrt;
+            var amntOfItem;
 
             function searchProducts()
             {
@@ -96,7 +118,7 @@ if ($OrderId != "")  {
                 }
             }
 
- var itemPrice = 0;
+            var itemPrice = 0;
             function itemDets(productId)
             {
                 //this gets the product and shows the info.
@@ -115,6 +137,7 @@ if ($OrderId != "")  {
                     dataType: 'json',
                     success: function (data)
                     {
+
                         $('#prodId').hide();
                         $('#searchbar').val("");
                         $('#productinfo').show();
@@ -125,10 +148,14 @@ if ($OrderId != "")  {
                         $('#searchbar').focus();
                         $('#price').show();
                         $('#quantity').val("");
-                      
-                       
                         itemPrice = data.Cost;
 
+                        if (prdctDescShrt == data.productDescriptshrt)
+                        {
+                            $("#dialog-confirm").dialog("open");
+                            $('#dialog-confirm').html("You already have this product at an amount of " + amntOfItem + "<br>" + "Do you want to continue?" );
+                           
+                        }
                     },
                     error: function (data)
                     {
@@ -138,7 +165,7 @@ if ($OrderId != "")  {
 
                 });
             }
-          
+
             function addItem()
             { //gets quantity and calculates the cost and then adds item to the database
                 var quantity = $('#quantity').val();
@@ -165,9 +192,9 @@ if ($OrderId != "")  {
                     success: function (data)
                     {
                         for (var i = 0; i < data.resultArray.length; i++) {
-                            $('#table2').append("<tr><td> " + data.resultArray[i].ProductDescShort + "</td><td>" + data.resultArray[i].qty + "</td><td> " + data.resultArray[i].itemValue );
+                            $('#table2').append("<tr><td> " + data.resultArray[i].ProductDescShort + "</td><td>" + data.resultArray[i].qty + "</td><td> " + data.resultArray[i].itemValue);
                         }
- 
+
                         $('#itemsBasket').show();
                         $('#productinfo').hide();
                         $('#table').show();
@@ -177,10 +204,19 @@ if ($OrderId != "")  {
                         for (var i = 0; i < data.resultArray.length; i++) {
                             totsOrder += data.resultArray[i].itemValue << 0;
                         }
+
                         totalOrder = totsOrder.toFixed(2);
-                          $('#Totsprice').html(totalOrder);
-                            $('#itemValue').html("");
-                      
+                        $('#Totsprice').html(totalOrder);
+                        $('#itemValue').html("");
+
+                        for (var i = 0; i < data.resultArray.length; i++) {
+                            prdctDescShrt = data.resultArray[i].ProductDescShort;
+                            amntOfItem = data.resultArray[i].qty;
+                        }
+
+
+
+
                     },
                     error: function (data)
                     {
@@ -191,13 +227,13 @@ if ($OrderId != "")  {
                 });
 
             }
-             function calcValue()
+            function calcValue()
             {
-               var quantity = $('#quantity').val(); 
-              
-               var itemVals = quantity * itemPrice;
-               var itemValue = itemVals.toFixed(2);
-               $('#itemValue').html(itemValue);
+                var quantity = $('#quantity').val();
+
+                var itemVals = quantity * itemPrice;
+                var itemValue = itemVals.toFixed(2);
+                $('#itemValue').html(itemValue);
             }
 
         </script>
@@ -294,21 +330,22 @@ if ($OrderId != "")  {
                 height:30px;
                 border:1px solid #cccccc;   
             }
-              #itemValue
+            #itemValue
             {
                 width: 12%;
                 height:30px;
                 border:1px solid #cccccc;
                 float: left;
-   
+
             }
             #quantity
             {
                 width:20%; 
             }
-            #OrderId 
+            #btnAdd
             {
-                
+                background-color: black;
+                color: white;
             }
 
 
@@ -317,13 +354,14 @@ if ($OrderId != "")  {
     </head>
     <body>
 
-        <?php
-        include_once 'erpTop.php';
-        ?>
+<?php
+include_once 'erpTop.php';
+?>
 
         <div id='input'>
+            <div id='dialog-confirm'> </div>
             <div id='search'>
-                <h4>Order ID </h4><div id='OrderId'><?php echo $OrderId ?></div>
+                Your Order ID: <div id='OrderId'><?php echo $OrderId ?></div> <?php echo $customerId ?>
                 <input type='hidden' value='<?php echo $OrderId ?> ' id='OrderId'>
                 <input type='search' placeholder='Search for product' id='searchbar'  onkeyup='searchProducts()'>
                 <img src='images/edit.png' width='50px' height= '50px' id='img' onclick='searchProducts()'> 
@@ -333,24 +371,24 @@ if ($OrderId != "")  {
 
 
             </table>   
-          
+
             <div id='productinfo'>
                 <div id='prodId'> </div>
                 <div id='productCode' class='iteminfo'>  </div>
                 <div id='productDescriptshrt' class='iteminfo'> </div>
                 <br>
-              
+
                 <label for="Quantity"> Quantity: </label> <br>
                 <input type='number' id='quantity' onchange='calcValue()'> 
-               <br>
-           
+                <br>
+
                 Price: <br>
-               <div id='itemValue'> </div> 
-               <br><br>
+                <div id='itemValue'> </div> 
+                <br><br>
                 <input type='button' value='Add' onclick='addItem()' id='btnAdd'> 
 
             </div> 
-          
+
         </div> 
         <div id='itemsBasket'>
             <h1>Order List </h1>  
@@ -378,9 +416,9 @@ if ($OrderId != "")  {
 
     </body>    
 
-    <?php
-    include_once 'erpFooter.php';
-    ?>
+<?php
+include_once 'erpFooter.php';
+?>
 
 
 
