@@ -10,7 +10,7 @@ if ($OrderId != "") {
 
 
         $sqlQuery = "SELECT * FROM OrderHeader WHERE OrderId = $OrderId";
-        $sqlQuery = "SELECT CustomerName FROM Customers WHERE customerId ";
+
 
 //echo $sqlQuery;
         //$results = sqlsrv_query($sqlConnection,$sqlQuery);
@@ -24,7 +24,7 @@ if ($OrderId != "") {
             foreach ($rs as $dataSet) {
 
                 $OrderId = $dataSet['OrderId'];
-                $customerId = $dataSet['CustomerId'];
+               
             }
         } catch (PDOExeption $e) {
             $errMsg = $e->getMessage();
@@ -34,6 +34,23 @@ if ($OrderId != "") {
         $errMsg = "No product Found";
         $errFlag = 1;
     }
+//    $sqlQuery = "SELECT OrderHeader.CustomerId, Customers.customerName
+//FROM OrderHeader CROSS JOIN  Customers WHERE OrderId = $OrderId ";
+//  
+//     try {
+//
+//            $result = $sqlConnection->prepare($sqlQuery);
+//            $result->execute();
+//            $rs = $result->fetchAll();
+////            print_r($rs);
+//            foreach ($rs as $dataSet) {
+//                $customerName = $dataSet['CustomerName'];
+//            }
+//             
+//        } catch (PDOExeption $e) {
+//            $errMsg = $e->getMessage();
+//            $errFlg = 1;
+//        }
 }
 ?>
 <html>
@@ -47,29 +64,29 @@ if ($OrderId != "") {
         <script>
             $(document).ready(function () {
                 $("#dialog-confirm").dialog({
-                resizable: false,
-                height: 200,
-                width: 500,
-                modal: true,
-                autoOpen: false,
-                buttons: {
-                    "Yes": function () {
-                       
-                        $(this).dialog("close");
-                    },
-                    Cancel: function () {
-                         $('#productinfo').hide();
-                         
-                        $(this).dialog("close");
+                    resizable: false,
+                    height: 200,
+                    width: 500,
+                    modal: true,
+                    autoOpen: false,
+                    buttons: {
+                        "Yes": function () {
+
+                            $(this).dialog("close");
+                        },
+                        Cancel: function () {
+                            $('#productinfo').hide();
+
+                            $(this).dialog("close");
+                        }
                     }
-                }
-            });
+                });
 
                 $('#productinfo').hide();
                 $('#itemsBasket').hide();
 
             });
-            
+
             function addAnotherprod()
             {
                 $('#input').show();
@@ -77,7 +94,7 @@ if ($OrderId != "") {
             }
 
             var char;
-            var totsOrder = 0;
+            var totsValue = 0;
             var prdctDescShrt;
             var amntOfItem;
 
@@ -148,13 +165,13 @@ if ($OrderId != "") {
                         $('#searchbar').focus();
                         $('#price').show();
                         $('#quantity').val("");
-                        itemPrice = data.Cost;
+                        itemPrice = data.RRP;
 
                         if (prdctDescShrt == data.productDescriptshrt)
                         {
                             $("#dialog-confirm").dialog("open");
-                            $('#dialog-confirm').html("You already have this product at an amount of " + amntOfItem + "<br>" + "Do you want to continue?" );
-                           
+                            $('#dialog-confirm').html("You already have this product at an amount of " + amntOfItem + "<br>" + "Do you want to continue?");
+
                         }
                     },
                     error: function (data)
@@ -202,21 +219,17 @@ if ($OrderId != "") {
                         $('#price').hide();
 
                         for (var i = 0; i < data.resultArray.length; i++) {
-                            totsOrder += data.resultArray[i].itemValue << 0;
+                            totsValue += data.resultArray[i].itemValue << 0;
                         }
 
-                        totalOrder = totsOrder.toFixed(2);
-                        $('#Totsprice').html(totalOrder);
+                        totalValue = totsValue.toFixed(2);
+                        $('#Totsprice').html(totalValue);
                         $('#itemValue').html("");
 
                         for (var i = 0; i < data.resultArray.length; i++) {
                             prdctDescShrt = data.resultArray[i].ProductDescShort;
                             amntOfItem = data.resultArray[i].qty;
                         }
-
-
-
-
                     },
                     error: function (data)
                     {
@@ -234,6 +247,9 @@ if ($OrderId != "") {
                 var itemVals = quantity * itemPrice;
                 var itemValue = itemVals.toFixed(2);
                 $('#itemValue').html(itemValue);
+            }
+            function orderFinished()
+            {
             }
 
         </script>
@@ -279,7 +295,7 @@ if ($OrderId != "") {
                 width: 30%;
                 height:10%;
                 border:1px solid #cccccc;
-                background-color: #dbdde0;
+
             }
 
             #input
@@ -344,24 +360,39 @@ if ($OrderId != "") {
             }
             #btnAdd
             {
-                background-color: black;
-                color: white;
+                background-color: #ABB1B3;
+                color: black;
+                border-radius: 15px;
+                width: 60px;
+                height: 40px;
             }
-
+            .button:active {
+                background-color: #3e8e41;
+            }
+            #addAnotherProd
+            {
+                background-color: #ABB1B3;
+                color: black;
+            }
+            #btnOrderfnshd
+            {
+                background-color: #ABB1B3;
+                color: black;
+            }
 
 
         </style>
     </head>
     <body>
 
-<?php
-include_once 'erpTop.php';
-?>
+        <?php
+        include_once 'erpTop.php';
+        ?>
 
         <div id='input'>
             <div id='dialog-confirm'> </div>
             <div id='search'>
-                Your Order ID: <div id='OrderId'><?php echo $OrderId ?></div> <?php echo $customerId ?>
+                Your Order ID: <div id='OrderId'><?php echo $OrderId ?> <?php echo $customerName ?></div> 
                 <input type='hidden' value='<?php echo $OrderId ?> ' id='OrderId'>
                 <input type='search' placeholder='Search for product' id='searchbar'  onkeyup='searchProducts()'>
                 <img src='images/edit.png' width='50px' height= '50px' id='img' onclick='searchProducts()'> 
@@ -393,7 +424,7 @@ include_once 'erpTop.php';
         <div id='itemsBasket'>
             <h1>Order List </h1>  
             <table id='table2'>  <td> Product </td> <td> Quantity </td> <td> Price </td></table>
-            Total Price:<div id='Totsprice'> </div>
+            Total Value:<div id='Totsprice'> </div>
             <br> <br>
             <input type='button' value='Add another item' onclick='addAnotherprod()' id='addAnotherProd'>
             <input type='button' value='Order Finished' onclick='orderFinished()' id='btnOrderfnshd'> 
@@ -416,9 +447,9 @@ include_once 'erpTop.php';
 
     </body>    
 
-<?php
-include_once 'erpFooter.php';
-?>
+    <?php
+    include_once 'erpFooter.php';
+    ?>
 
 
 
