@@ -2,7 +2,7 @@
 $sqlConnection = null;
 include_once 'config.php';
 $OrderId = $_POST['OrderId'];
-echo $OrderId;
+
 if ($OrderId != "")  {
     //amending a product
     $sqlConnection = connectToDatabase();
@@ -18,23 +18,22 @@ if ($OrderId != "")  {
             $result = $sqlConnection->prepare($sqlQuery);
             $result->execute();
             $rs = $result->fetchAll();
-            print_r($rs);
+            //print_r($rs);
             foreach ($rs as $dataSet) {
 
             $OrderId = $dataSet['OrderId'];
 
         }
 
-        } catch (PDOExeption $e) {
-            $errMsg = $e->getMessage();
-            $errFlg = 1;
-        }
-        
-
+     } catch (PDOExeption $e) {
+        $errMsg = $e->getMessage();
+        $errFlg = 1;
     }
+} else {
+    $errMsg = "No product Found";
+    $errFlag = 1;
 }
-
-
+}
 ?>
 <html>
     <head>
@@ -44,10 +43,6 @@ if ($OrderId != "")  {
         <script src="jQuery/jquery-ui.min.js"></script>
         <link rel='stylesheet' type='text/css' href= 'css/style.css'>
         <link rel='stylesheet' type='text/css' href= 'jquery/jquery-ui.min.css'>
-
-
-
-
         <script>
             $(document).ready(function () {
 
@@ -149,6 +144,7 @@ if ($OrderId != "")  {
                 var quantity = $('#quantity').val();
                 var productId = $('#prodId').html();
                 var price = $('#itemValue').html();
+                var OrderId = $('#OrderId').html();
 
 
                 $.ajax({
@@ -161,8 +157,8 @@ if ($OrderId != "")  {
                         'request': 'addItems',
                         'ProductId': productId,
                         'quantity': quantity,
-                        'price': price
-
+                        'price': price,
+                        'OrderId': OrderId
 
                     },
                     dataType: 'json',
@@ -303,17 +299,17 @@ if ($OrderId != "")  {
                 width: 12%;
                 height:30px;
                 border:1px solid #cccccc;
-                
                 float: left;
-              
-               
-               
+   
             }
             #quantity
             {
                 width:20%; 
             }
-
+            #OrderId 
+            {
+                
+            }
 
 
 
@@ -327,7 +323,8 @@ if ($OrderId != "")  {
 
         <div id='input'>
             <div id='search'>
-                <h3> Order ID:&nbsp; <?php echo $OrderId ?> </h3>
+                <h4>Order ID </h4><div id='OrderId'><?php echo $OrderId ?></div>
+                <input type='hidden' value='<?php echo $OrderId ?> ' id='OrderId'>
                 <input type='search' placeholder='Search for product' id='searchbar'  onkeyup='searchProducts()'>
                 <img src='images/edit.png' width='50px' height= '50px' id='img' onclick='searchProducts()'> 
             </div>
