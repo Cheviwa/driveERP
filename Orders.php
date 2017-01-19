@@ -7,7 +7,6 @@ if ($sqlConnection != null) {
     //joins the customer Name and the customer Id
     $sqlQuery = "SELECT * FROM OrderHeader JOIN Customers ON OrderHeader.CustomerId = Customers.customerId ";
     //$results = sqlsrv_query($sqlConnection,$sqlQuery);
-
     $result = $sqlConnection->prepare($sqlQuery);
     $result->execute();
     $rs = $result->fetchAll();
@@ -23,6 +22,7 @@ if ($sqlConnection != null) {
         <script src="jQuery/jquery-ui.min.js"></script>
         <link rel='stylesheet' type='text/css' href= 'css/style.css'>
         <link rel='stylesheet' type='text/css' href= 'jquery/jquery-ui.min.css'>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
 
 
 
@@ -70,6 +70,7 @@ if ($sqlConnection != null) {
 //                        window.location.href = 'items.php';
 
                         $('#OrderId').val(data.OrderId);
+                     
                         document.forms['frmOrderId'].submit();
                     }
                 },
@@ -87,11 +88,15 @@ if ($sqlConnection != null) {
     </script>
     <style>
 
-
+body{ line-height: 2.5;}
         #customersForm
         {
             width: 80%;
             height: 80%;
+            margin-left: 40%;
+            margin-right: 35%;
+      
+           
         }
         #table2
         {
@@ -107,8 +112,9 @@ if ($sqlConnection != null) {
         }
 
         label{
-            border:1px solid #cccccc;
+            
             width: 12%;
+            font-weight: 600;
 
         }
         .tb1
@@ -120,18 +126,19 @@ if ($sqlConnection != null) {
         #input
         {
             width: 60%;
-            height: 60%;
+            height: 80%;
             padding-left: 10px;
         }
         #datepicker
         {
             width: 100px;       
         }
-        #email
-        {
-            width: 35%;
-        }
-
+      
+.form-control
+{
+    width: 45%!important;
+    height: 8%!important;
+}
 
 
 
@@ -141,10 +148,10 @@ if ($sqlConnection != null) {
         include_once 'erpTop.php';
         ?>
 
-        <div id="customersForm">
+        <div id="customersForm" class="form-group">
             <div id='input'>
                 <label for='customerId'> Customer ID</label>
-                <select id='customerId'> 
+                <select id='customerId' class="form-control"> 
                     <option value="12"> Tesco </option>
                     <option value="13">Sainsbury</option>  
                     <option value="14">Asda</option>
@@ -152,29 +159,29 @@ if ($sqlConnection != null) {
                     <option value="16">M&S</option>
                 </select>
 
-                <div class="tbl">
+                <div>
                     <label for="duedate"> Due Date </label>
-                    <input type='text' id='duedate'>
+                    <input type='text' id='duedate' class="form-control">
                 </div>
 
-                <div class="tbl">
+                <div >
                     <label for='email' > Email </label>
-                    <input type='email' id="email"  > 
+                    <input type='email' id="email" class= "form-control"> 
                 </div>
-                <div class="tbl">
+                <div>
                     <label for="telNo"> Tell No.</label>
-                    <input type="tel" id="telNo"   > 
+                    <input type="tel" id="telNo" class="form-control"  > 
                 </div>
-                <div class="tbl">
+                <div>
                     <label for="currency">Currency</label>
 
-                    <select  id="currency"> 
+                    <select  id="currency" class="form-control"> 
                         <option value="GBP" > GBP </option>
                         <option value="EURO" > EURO </option>
 
                     </select> 
                     <br>
-                    <input type='button' value='Create' onclick='AddNew()' id='btnAdd'> 
+                    <input type='button' value='Create'class="btn btn-default" onclick='AddNew()' id='btnAdd'> 
                 </div>
             </div> 
             <form action='items.php' method='post' name="frmOrderId">

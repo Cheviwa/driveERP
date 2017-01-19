@@ -1,8 +1,11 @@
 <?php
 $sqlConnection = null;
-include_once 'config.php';
-$OrderId = $_POST['OrderId'];
 
+$OrderId = $_POST['OrderId'];
+if ($OrderId == "") {
+    header('Location: Orders.php');
+}
+include_once 'config.php';
 if ($OrderId != "") {
     //amending a product
     $sqlConnection = connectToDatabase();
@@ -60,6 +63,7 @@ if ($OrderId != "") {
         <script src="jQuery/jquery-ui.min.js"></script>
         <link rel='stylesheet' type='text/css' href= 'css/style.css'>
         <link rel='stylesheet' type='text/css' href= 'jquery/jquery-ui.min.css'>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
         <script>
             $(document).ready(function () {
                 $("#dialog-confirm").dialog({
@@ -96,7 +100,8 @@ if ($OrderId != "") {
                 });
 
                 $('#productinfo').hide();
-                $('#itemsBasket').hide();
+//                $('#itemsBasket').hide();
+
 
             });
 
@@ -104,6 +109,7 @@ if ($OrderId != "") {
             {
                 $('#input').show();
                 $('#itemsBasket').hide();
+                $('#search').show();
             }
 
             var char;
@@ -172,12 +178,14 @@ if ($OrderId != "") {
                         $('#searchbar').val("");
                         $('#productinfo').show();
                         $('#prodId').html(productId);
-                        $('#productCode').html("Product Code: " + data.productCode);
-                        $('#productDescriptshrt').html("Product: " + data.productDescriptshrt);
+                        $('#productCode').html("<strong> Product Code: </strong>" + data.productCode);
+                        $('#productDescriptshrt').html(" <strong> Product:</strong> " + data.productDescriptshrt);
+                        $('#RRP').html("<strong> Price: </strong>" + data.RRP);
                         $('#table').html("");
                         $('#searchbar').focus();
                         $('#price').show();
                         $('#quantity').val("");
+                        $('#search').hide();
                         itemPrice = data.RRP;
 
                         if (prdctDescShrt == data.productDescriptshrt)
@@ -261,9 +269,10 @@ if ($OrderId != "") {
                 var itemValue = itemVals.toFixed(2);
                 $('#itemValue').html(itemValue);
             }
-            
+
             function checkStock()
             {
+                var productId = $('#prodId').html();
                 $.ajax({
 
                     url: 'ajax/products_ajax.php',
@@ -272,6 +281,7 @@ if ($OrderId != "") {
                     data: {
 
                         'request': 'checkStock',
+                        'ProductId': productId
 
                     },
                     dataType: 'json',
@@ -297,6 +307,11 @@ if ($OrderId != "") {
         </script>
 
         <style>
+            body {
+                background-color: #f7f2eb !important;
+            }
+
+
 
 
             #customersForm
@@ -325,19 +340,20 @@ if ($OrderId != "") {
             }
             th
             {
-                width: 100px;
-                height: 60px;
+                background-color: #E8E8E6;
+                  width:75px;
+                height:60px;
             }
+
             #img
             {
                 padding-bottom: 2px;
             }
             .iteminfo
             {
-                width: 30%;
+                width: 80%;
                 height:10%;
-                border:1px solid #cccccc;
-
+                font-size: 20px;
             }
 
             #input
@@ -348,6 +364,7 @@ if ($OrderId != "") {
                 height: 80%;
                 padding-left: 20px;
                 overflow: hidden;
+
             }
             #itemsBasket
             {
@@ -364,49 +381,61 @@ if ($OrderId != "") {
             {
                 float: left;
                 overflow: hidden;
-                width: 60%;
-                height:80%;
+                width: 100%;
+                height:100%;
                 display: inline-block;
+                margin-right: 65%;
+                background-color:#f7f2eb;
+
             }
             #searchbar
             {
-                width: 40%;
+                width: 50%;
                 height: 50px;
-            }
+                border-radius: 15px 50px 30px;
+                border: solid darkgrey;
+                text-align: center;
 
+            }
             td
             {
-                width:75px;
-                height:60px;
+              
                 border: 2px solid #cccccc;
+
+                background-color: white;
             }
-            tr:nth-child(even) {background-color: #dbdde0}
+            tr:nth-child {
+                background-color: #cccccc }
 
             #Totsprice
             {
                 width: 15%;
                 height:30px;
-                border:1px solid #cccccc;   
+                border:1px solid #cccccc;
+                padding-top: 10px;
+                display: inline-block;
+                margin-top: 20px;
             }
             #itemValue
             {
                 width: 12%;
                 height:30px;
-                border:1px solid #cccccc;
-                float: left;
+                display: inline-block;
+                font-size: 20px;
 
             }
             #quantity
             {
-                width:20%; 
+                width:15%; 
+                display: inline-block;
+                font-size: 20px
             }
             #btnAdd
             {
-                background-color: #ABB1B3;
-                color: black;
-                border-radius: 15px;
-                width: 60px;
-                height: 40px;
+                background-color:#E8E8E6!important;
+                font-size: 20px !important;
+                font-weight: 600 !important;
+
             }
             .button:active {
                 background-color: #3e8e41;
@@ -421,6 +450,41 @@ if ($OrderId != "") {
                 background-color: #ABB1B3;
                 color: black;
             }
+            #OrderId
+            {
+                display: inline-block;
+                font-size: 20px;
+            }
+            #para
+            {
+                display: inline-block;
+                font-size: 20px; 
+
+            }
+            .label
+            {
+                display: inline-block;
+                font-size: 20px; 
+                font-weight: 600;
+            }
+
+            #productCode
+            {
+                background-color: #E8E8E6;
+                width: 100%;
+            }
+            #RRP
+            {
+                background-color: #E8E8E6;
+                width: 100%;    
+            }
+            .btn btn-default
+            {
+                background-color:#E8E8E6!important;
+                font-size: 10px !important;
+                font-weight: 300 !important;
+
+            }
 
 
         </style>
@@ -434,9 +498,8 @@ if ($OrderId != "") {
         <div id='input'>
             <div id='dialog-confirm'> </div>
             <div id='dialog-message'> <p> Thank you! Your order has been recieved.</p></div>
+            <p id='para'>Your Order ID is:</p> <div id='OrderId'class='inputSi'><?php echo $OrderId ?> <?php echo $customerName ?></div> 
             <div id='search'>
-                Your Order ID: <div id='OrderId'><?php echo $OrderId ?> <?php echo $customerName ?></div> 
-                <input type='hidden' value='<?php echo $OrderId ?> ' id='OrderId'>
                 <input type='search' placeholder='Search for product' id='searchbar'  onkeyup='searchProducts()'>
                 <img src='images/edit.png' width='50px' height= '50px' id='img' onclick='searchProducts()'> 
             </div>
@@ -450,27 +513,28 @@ if ($OrderId != "") {
                 <div id='prodId'> </div>
                 <div id='productCode' class='iteminfo'>  </div>
                 <div id='productDescriptshrt' class='iteminfo'> </div>
+                <div id='RRP' class='iteminfo'> </div>
                 <br>
+                <div id='prices'>
+                    <label for="Quantity" class='label'> Quantity: </label> 
+                    <input type='number' id='quantity' onchange='calcValue()'> 
+                    &nbsp;
+                    <p class="label"> Value:</p> 
+                    <div id='itemValue'> </div> 
 
-                <label for="Quantity"> Quantity: </label> <br>
-                <input type='number' id='quantity' onchange='calcValue()'> 
-                <br>
-
-                Price: <br>
-                <div id='itemValue'> </div> 
-                <br><br>
-                <input type='button' value='Add' onclick='addItem()' id='btnAdd'> 
+                </div> 
+                <input type='button' value='Add' class="btn btn-default" id='btnAdd' onclick='addItem()' > 
 
             </div> 
 
         </div> 
         <div id='itemsBasket'>
             <h1>Order List </h1>  
-            <table id='table2'>  <td> Product </td> <td> Quantity </td> <td> Price </td></table>
-            Total Value:<div id='Totsprice'> </div>
-            <br> <br>
-            <input type='button' value='Add another item' onclick='addAnotherprod()' id='addAnotherProd'>
-            <input type='button' value='Order Finished' onclick='orderFinished()' id='btnOrderfnshd'> 
+            <table id='table2'>  <th> Product </th> <th> Quantity </th> <th> Price </th></table>
+            <label for='Totsprice' class='label'> Total Value</label><div id='Totsprice'> </div>
+            <br> 
+            <input type='button' value='Add another item' class="btn btn-default" onclick='addAnotherprod()' id='addAnotherProd'>
+            <input type='button' value='Order Finished'class="btn btn-default" onclick='orderFinished()' id='btnOrderfnshd'> 
         </div>
 
 
