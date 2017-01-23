@@ -70,8 +70,8 @@ if ($sqlConnection != null) {
 //                        window.location.href = 'items.php';
 
                         $('#OrderId').val(data.OrderId);
+                          document.forms['frmOrderId'].submit();
                      
-                        document.forms['frmOrderId'].submit();
                     }
                 },
                 error: function (data)
@@ -187,6 +187,9 @@ body{ line-height: 2.5;}
             <form action='items.php' method='post' name="frmOrderId">
                 <input type='hidden' name='OrderId' id='OrderId'>  
             </form>
+<!--             <form action='pdf.php' method='post' name="frmOrderIdpdf">
+                <input type='hidden' name='OrderId' id='OrderId'>  
+            </form>-->
         </div> 
 
 

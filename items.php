@@ -27,6 +27,7 @@ if ($OrderId != "") {
             foreach ($rs as $dataSet) {
 
                 $OrderId = $dataSet['OrderId'];
+                
             }
         } catch (PDOExeption $e) {
             $errMsg = $e->getMessage();
@@ -79,8 +80,8 @@ if ($OrderId != "") {
                         },
                         Cancel: function () {
                             $('#productinfo').hide();
-
-                            $(this).dialog("close");
+                            $('#search').show();
+                             $(this).dialog("close");
                         }
                     }
 
@@ -92,7 +93,9 @@ if ($OrderId != "") {
                         autoOpen: false,
                         buttons: {
                             Ok: function () {
-                                window.location.href = 'products.php';
+                              
+                                 document.forms['frmOrderId'].submit();
+//                                window.location.href = 'fpdf/pdf.php';
                                 $(this).dialog("close");
                             }
                         }
@@ -100,7 +103,7 @@ if ($OrderId != "") {
                 });
 
                 $('#productinfo').hide();
-//                $('#itemsBasket').hide();
+                $('#itemsBasket').hide();
 
 
             });
@@ -270,47 +273,22 @@ if ($OrderId != "") {
                 $('#itemValue').html(itemValue);
             }
 
-            function checkStock()
-            {
-                var productId = $('#prodId').html();
-                $.ajax({
-
-                    url: 'ajax/products_ajax.php',
-                    cache: false,
-                    type: 'POST',
-                    data: {
-
-                        'request': 'checkStock',
-                        'ProductId': productId
-
-                    },
-                    dataType: 'json',
-                    success: function (data)
-                    {
-
-
-                    },
-                    error: function (data)
-                    {
-
-                        alert('error in calling ajax page');
-                    }
-
-                });
-            }
             function orderFinished()
             {
-                $("#dialog-message").dialog("open");
+//                $("#dialog-message").dialog("open");
+                
+                 document.forms['frmOrderId'].submit();
             }
+            
 
 
         </script>
 
         <style>
             body {
-                background-color: #f7f2eb !important;
+/*                background-color: #ebf0f7  !important; */
             }
-
+#f7f2eb
 
 
 
@@ -341,8 +319,9 @@ if ($OrderId != "") {
             th
             {
                 background-color: #E8E8E6;
-                  width:75px;
+                width:75px;
                 height:60px;
+                text-align: center;
             }
 
             #img
@@ -397,24 +376,26 @@ if ($OrderId != "") {
                 text-align: center;
 
             }
+            #table2
+            {
+                width: 100%
+            }
             td
             {
-              
-                border: 2px solid #cccccc;
 
+                border: 2px solid #cccccc;
                 background-color: white;
+                width: 20%;
             }
             tr:nth-child {
                 background-color: #cccccc }
 
             #Totsprice
             {
-                width: 15%;
+                width: 12%;
                 height:30px;
-                border:1px solid #cccccc;
-                padding-top: 10px;
                 display: inline-block;
-                margin-top: 20px;
+                font-size: 20px;
             }
             #itemValue
             {
@@ -450,7 +431,7 @@ if ($OrderId != "") {
                 background-color: #ABB1B3;
                 color: black;
             }
-            #OrderId
+            #OrderIdx
             {
                 display: inline-block;
                 font-size: 20px;
@@ -483,7 +464,6 @@ if ($OrderId != "") {
                 background-color:#E8E8E6!important;
                 font-size: 10px !important;
                 font-weight: 300 !important;
-
             }
 
 
@@ -498,7 +478,7 @@ if ($OrderId != "") {
         <div id='input'>
             <div id='dialog-confirm'> </div>
             <div id='dialog-message'> <p> Thank you! Your order has been recieved.</p></div>
-            <p id='para'>Your Order ID is:</p> <div id='OrderId'class='inputSi'><?php echo $OrderId ?> <?php echo $customerName ?></div> 
+            <p id='para'>Your Order ID is:</p> <div id='OrderIdx'class='inputSi'><?php echo $OrderId ?> <?php echo $customerName ?></div> 
             <div id='search'>
                 <input type='search' placeholder='Search for product' id='searchbar'  onkeyup='searchProducts()'>
                 <img src='images/edit.png' width='50px' height= '50px' id='img' onclick='searchProducts()'> 
@@ -531,12 +511,14 @@ if ($OrderId != "") {
         <div id='itemsBasket'>
             <h1>Order List </h1>  
             <table id='table2'>  <th> Product </th> <th> Quantity </th> <th> Price </th></table>
-            <label for='Totsprice' class='label'> Total Value</label><div id='Totsprice'> </div>
-            <br> 
+             <label for='Totsprice' class='label'> Total Value: &nbsp; &pound;</label><div id='Totsprice'> </div>
+            <br> <br> 
             <input type='button' value='Add another item' class="btn btn-default" onclick='addAnotherprod()' id='addAnotherProd'>
             <input type='button' value='Order Finished'class="btn btn-default" onclick='orderFinished()' id='btnOrderfnshd'> 
         </div>
-
+        <form action='fpdf/pdf.php' method='post' name="frmOrderId">
+            <input type='hidden' name='OrderId' id='OrderId' value='<?php echo $OrderId ?>'>  
+            </form>
 
 
         <!--            <div id='finalOrder'>
