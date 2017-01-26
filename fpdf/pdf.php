@@ -3,7 +3,7 @@
 include_once 'config.php';
 
 $OrderId = $_POST['OrderId'];
-$OrderId = 36;
+//$OrderId = 36;
 
 
 //* Co-ordinates  ****************************************//
