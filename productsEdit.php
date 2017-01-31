@@ -174,7 +174,7 @@ if ($prodId != "") {
         
         function userCost()
         {
-            var oldCost = <?php echo $Cost; ?>;
+//            var oldCost = <?php echo $Cost; ?>;
             var newCost = $('#Cost').val();
             if (newCost > oldCost + 2);
             {

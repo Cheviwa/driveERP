@@ -13,6 +13,7 @@ if ($sqlConnection != null) {
     //print_r($rs);
     // print_r($result->rowCount());
 }
+
 ?>
 <html>
     <head>
@@ -82,6 +83,12 @@ if ($sqlConnection != null) {
 
             });
         }
+        function getOrderEnquiry()
+        {
+           $('#orderEnquiry').val();
+         document.forms['orderIdEnq'].submit();
+           
+        }
 
 
 
@@ -91,11 +98,10 @@ if ($sqlConnection != null) {
 body{ line-height: 2.5;}
         #customersForm
         {
-            width: 80%;
+            width: 100%;
             height: 80%;
-            margin-left: 40%;
-            margin-right: 35%;
-      
+           
+           
            
         }
         #table2
@@ -125,9 +131,11 @@ body{ line-height: 2.5;}
         }
         #input
         {
-            width: 60%;
+            width: 40%;
             height: 80%;
             padding-left: 10px;
+            float: left;
+            margin-left: 40px;
         }
         #datepicker
         {
@@ -139,6 +147,16 @@ body{ line-height: 2.5;}
     width: 45%!important;
     height: 8%!important;
 }
+#Enquiry
+{
+    width: 50%;
+    height: 60%;
+    float: left;
+    padding-left: 40px;
+    border:#cccccc 2px;
+    
+        
+}
 
 
 
@@ -149,7 +167,15 @@ body{ line-height: 2.5;}
         ?>
 
         <div id="customersForm" class="form-group">
+            <form action='orderEnquiry.php' method='post' name="orderIdEnq">
+           <div id="Enquiry">
+               <label for="orderEnquiry"> Order Enquiry </label>
+               <input type='text' id='orderEnquiry' name='orderEnquiry' class="form-control" placeholder='Enter Order Id'>
+              <input type='button' value='Enter'class="btn btn-default" onclick='getOrderEnquiry()'>
+              </div> </form>
+          
             <div id='input'>
+                <h5> NEW ORDER </h5>
                 <label for='customerId'> Customer ID</label>
                 <select id='customerId' class="form-control"> 
                     <option value="12"> Tesco </option>
@@ -187,6 +213,8 @@ body{ line-height: 2.5;}
             <form action='items.php' method='post' name="frmOrderId">
                 <input type='hidden' name='OrderId' id='OrderId'>  
             </form>
+            
+            
 <!--             <form action='pdf.php' method='post' name="frmOrderIdpdf">
                 <input type='hidden' name='OrderId' id='OrderId'>  
             </form>-->

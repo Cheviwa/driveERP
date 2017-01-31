@@ -212,7 +212,7 @@ if ($OrderId != "") {
                 var quantity = $('#quantity').val();
                 var productId = $('#prodId').html();
                 var price = $('#itemValue').html();
-                var OrderId = $('#OrderId').html();
+                var OrderId = $('#OrderIdx').html();
 
 
                 $.ajax({
@@ -275,9 +275,9 @@ if ($OrderId != "") {
 
             function orderFinished()
             {
-//                $("#dialog-message").dialog("open");
+                $("#dialog-message").dialog("open");
                 
-                 document.forms['frmOrderId'].submit();
+     
             }
             
 

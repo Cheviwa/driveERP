@@ -1,7 +1,7 @@
 <?php
-
+    include_once '../class_product.php';
 $sqlConnection = null;
-include_once 'config.php';
+//include_once 'config.php';
 $errFlg = 0;
 $errMsg = "";
 
@@ -23,7 +23,11 @@ $price = $_POST['price'];
 $OrderId = $_POST['OrderId'];
 
 
-$sqlConnection = connectToDatabase();
+//$sqlConnection = connectToDatabase();
+include_once '../connection.php';
+$sqlClass = new connection();
+$sqlConnection = $sqlClass->sqlConnect();
+
 if ($request == "insertProduct") {
     //code to make sure the user's input is inserted into the database table
     if ($sqlConnection != null) { {
@@ -37,7 +41,7 @@ if ($request == "insertProduct") {
 
             $result = $sqlConnection->prepare($sqlQuery);
             $result->execute();
-            $rs = $result->fetchAll();
+//            $rs = $result->fetchAll();
         } catch (PDOExeption $e) {
             // echo 'hello';
             $errMsg = $e->getMessage();      //set error message
@@ -78,7 +82,7 @@ if ($request == "updateProduct") {
 
             $result = $sqlConnection->prepare($sqlQuery);
             $result->execute();
-            $rs = $result->fetchAll();
+//            $rs = $result->fetchAll();
         } catch (PDOExeption $e) {
             $errMsg = $e->getMessage();
             $errFlg = 1;
@@ -134,25 +138,6 @@ if ($request == "gettingProducts") {
     $jsonVal->RRP = $RRP;
     $jsonVal->productCode = $productCode;
 }
-if ($request == "checkStock") {
-    if ($sqlConnection != null) { 
-            $sqlQuery = "SELECT Stock WHERE ProductId= $productId ";
-        }
-        //echo $sqlQuery;
-        try {
-
-            $result = $sqlConnection->prepare($sqlQuery);
-            $result->execute();
-            $rs = $result->fetchAll();
-        }
-            
-         catch (PDOExeption $e) {
-            $errMsg = $e->getMessage();      //set error message
-            $errFlg = 1;
-        }
-        $jsonVal->errMsg = $errMsg;
-    }
-
 
 if ($request == "addItems") {
     //code to make sure the user's input is inserted into the database table
@@ -160,44 +145,46 @@ if ($request == "addItems") {
             //code to make sure the user's input is inserted into the database table
         
 
-            $sqlQuery = "INSERT INTO OrderItems(OrderId,productId, quantity,price) VALUES ($OrderId,$productId, $quantity,$price )";
+            $sqlQuery = "INSERT INTO OrderItems(OrderId, productId, quantity, price) VALUES ($OrderId, $productId, $quantity, $price)";
+//            echo $sqlQuery;
             
         }
-        //echo $sqlQuery;
-
-        try {
+               try {
 
             $result = $sqlConnection->prepare($sqlQuery);
             $result->execute();
-            $rs = $result->fetchAll();
+//            $rs = $result->fetchAll();
         } catch (PDOExeption $e) {
+            // echo 'hello';
             $errMsg = $e->getMessage();      //set error message
             $errFlg = 1;
         }
-        
-        $sqlQuery = "SELECT ProductDescShort, RRP AS price, RRP * $quantity AS itemValue, $quantity AS qty FROM product WHERE ProductId = $productId";
-//echo $sqlQuery;
+    }
 
-        try {
-
-            $result = $sqlConnection->prepare($sqlQuery);
-            $result->execute();
-            $rs = $result->fetchAll(); {
-//                foreach ($rs as $dataSet) {
-//                    $value = $dataSet['VALUE'];
-////                    $productDescriptShrt = $dataSet['ProductDescShort'];
-////                }
-               
-            }
-        } catch (PDOExeption $e) {
-            $errMsg = $e->getMessage();      //set error message
-            $errFlg = 1;
-        }
+$sqlgetOrderItem = new class_product();
+$rs = $sqlgetOrderItem->getOrderItem($productId,$quantity);       
+//        $sqlQuery = "SELECT ProductDescShort, RRP AS price, RRP * $quantity AS itemValue, $quantity AS qty FROM product WHERE ProductId = $productId";
+////echo $sqlQuery;
+//
+//        try {
+//
+//            $result = $sqlConnection->prepare($sqlQuery);
+//            $result->execute();
+//            $rs = $result->fetchAll();      
+//        } catch (PDOExeption $e) {
+//            $errMsg = $e->getMessage();      //set error message
+//            $errFlg = 1;
+//        }
        
     $jsonVal->errMsg = $errMsg;
     $jsonVal->resultArray = $rs;
     }
-}
+    if($request == "getOrderEnquiry")
+    {
+        
+    }
+
+
 
 
 
