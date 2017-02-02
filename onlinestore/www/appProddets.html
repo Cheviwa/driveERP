@@ -1,0 +1,246 @@
+<?php
+include_once 'connection.php';
+
+
+$sqlClass = new connection();
+$sqlConnection = $sqlClass->sqlConnect();
+$productId = $_POST['productId'];
+//$ipAddress = 10.0.4.16;
+//var_dump($ipAddress);
+
+$sqlQuery = "SELECT * FROM  product WHERE productID = $productId";
+
+if (trim($productId) != "") {
+    try {
+        $result = $sqlConnection->prepare($sqlQuery);
+        $result->execute();
+        $rs = $result->fetchAll();
+
+        foreach ($rs as $dataSet) {
+            $productId = $dataSet['ProductId'];
+            $productCode = $dataSet['ProductCode'];
+            $productDescriptshrt = $dataSet['ProductDescShort'];
+            $productDescriptLng = $dataSet['ProductDescLong'];
+            $productEan = $dataSet['ProductEAN'];
+            $productCat = $dataSet['ProductCat'];
+            $Cost = $dataSet['Cost'];
+            $RRP = $dataSet['RRP'];
+            $weight = $dataSet['Weight'];
+            $prodImagePath = $dataSet['productImagePath'];
+        }
+    } catch (PDOExeption $e) {
+        $errMsg = $e->getMessage();
+        $errFlg = 1;
+    }
+} else {
+    $errMsg = "No product Found";
+    $errFlag = 1;
+}
+?>
+<html>
+    <head>
+        <meta charset="windows-1252">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="jQuery/jquery-min.js"></script>
+        <script src="jQuery/jquery-ui.min.js"></script>
+        <link rel='stylesheet' type='text/css' href= 'css/style.css'>
+        <link rel='stylesheet' type='text/css' href= 'jquery/jquery-ui.min.css'>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Pacifico|Roboto" rel="stylesheet"> 
+    </head>
+    <script>
+        $(document).ready(function () {
+            $("#dialog-confirm").dialog({
+                resizable: false,
+                height: 200,
+                width: 200,
+                modal: true,
+                autoOpen: false,
+                buttons: {
+                    "OK": function () {
+                        window.location.href = 'appHomepage.php';
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+        
+        var qty;
+        var price;
+     
+        function addtoBaskt() {
+            var quantity = $('#quantity').val();
+            var productId = $('#prodId').val();
+            var price = $('#totalPrice').html();
+
+
+            $.ajax({
+
+                url: 'ajax/app_ajax.php',
+                cache: false,
+                type: 'POST',
+                data: {
+
+                    'request': 'addProduct',
+                    'ProductId': productId,
+                    'quantity': quantity,
+                    'price': price
+
+                },
+                dataType: 'json',
+                success: function (data){
+
+                    $("#dialog-confirm").dialog("open");
+                    $('#dialog-confirm').html("Product has been added to basket!");
+
+                },
+                error: function (data)
+                {
+
+                    alert('error in calling ajax page');
+                }
+
+            });
+        }
+        function Home()
+        {
+            window.location.href = 'appHomepage.php';
+        }
+        function viewBasket()
+        {
+            $.ajax({
+
+                url: 'ajax/app_ajax.php',
+                cache: false,
+                type: 'POST',
+                data: {
+
+                    'request': 'viewBasket',
+
+                },
+                dataType: 'json',
+                success: function (data)
+                {
+                    for (var i = 0; i < data.resultArray.length; i++) {
+                        $('#basket').append('<tr><td>' + data.resultArray[i].ProductDescShort + '<td>' + 'Qty' + data.resultArray[i].quantity + '<td>' + 'Price'  + data.resultArray[i].price + '</tr></td>');
+                    };
+                    $('#prodDets').hide();
+                },
+                error: function (data)
+                {
+
+                    alert('error in calling ajax page');
+                }
+
+            });
+        }
+        function calcValue()
+        {
+             var quantity = $('#quantity').val();
+                   price = $('#price').val();
+                   var Totsvalue = quantity * price;
+                   
+//                   alert(Totsvalue);
+                    $('#totalPrice').html(Totsvalue); 
+        }
+
+
+    </script>
+    <style>
+        #header
+        {
+            width: 100%;
+            height: 5%;
+            background-color:#68EFAD;
+            border:2px solid #68EFAD;
+            font-family: 'Pacifico';
+            padding-bottom: 20px;
+
+        }
+        #wrapper
+        {
+            width: 100%;
+            background-color: F5F5F5;
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            display: inline-block;
+        }
+
+        #table
+        {
+            height: 30%;
+            width: 50%;
+        }
+        #quantity
+        {
+            width: 20%;
+        }
+        #btnAdd
+        {
+            background-color: #51eda0;
+        }
+        #divBasket
+        {
+            width: 100%;
+            height: 5%;
+            border: 1px solid #adf6d3;
+        }
+        #img
+        {
+            margin-left: 80%; 
+            float: left;
+        }
+        td
+        {
+           width: 30%; 
+        }
+       tr:nth-child {
+                background-color: red; }
+        
+    </style>
+    <body>
+        <div id='wrapper'> 
+            <div id='header'> <h3> Walkers Crisps </h3>
+
+            </div>
+            <div id="divBasket">   <img id='img'src='images/home.png'width= 30px height=30px onclick="Home()" >
+                <img id='img2'src='images/basketicon.png'width= 30px height=30px onclick='viewBasket()' >
+
+            </div>
+            <div id='prodDets'>
+                <div id="imgdiv">
+                    <img src= '<?php echo $prodImagePath
+?>'width= 120px height=120px >
+                </div>
+                <table id='table'>
+
+                    <tr>
+                        <td> 
+                            <?php echo $productDescriptshrt; ?> </td>
+                    </tr>
+
+                    <tr>
+                        <td>  
+                            <?php echo $productDescriptLng; ?>  </td>
+                    </tr>
+                    <tr>
+                        <td> 
+                            &pound<?php echo $RRP; ?> </td>
+                    </tr>
+                </table>  
+                <label for='quantity'>Quantity</label>
+                <input type='number' id='quantity'onchange='calcValue()'>
+                <br>
+                <div id='totalPrice'>  </div>
+                <button class="btn btn-default" id='btnAdd' onclick="addtoBaskt()"> Add to basket</button>
+                <input type='hidden' id='prodId' value='<?php echo $productId; ?>'>
+                <input type='hidden' id='price' value='<?php echo $RRP ?>'>
+                <div id='dialog-confirm'>
+                </div>
+            </div>
+            <div id="basket"> </div>
+            <table> </table>
+        </div>
+
+    </body>
+</html>

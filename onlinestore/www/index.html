@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Blank Cordova Mobile App Template</title>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">
+        <script src="js/jquery-min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+        <link rel='stylesheet' type='text/css' href= 'js/jquery-ui.min.css'>
+        <link href="https://fonts.googleapis.com/css?family=Pacifico|Roboto" rel="stylesheet"> 
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script>
+            var ipAddress = "http://10.0.4.16:81/erp/ajax/app_ajax.php";
+            var prodId;
+            function  onDeviceReady() {
+                //alert('1');
+
+                               $('#popUp').hide();
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    height: 200,
+                    width: 200,
+                    modal: true,
+                    autoOpen: false,
+                    buttons: {
+                        "OK": function () {
+                            window.location.href = 'index.html';
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+                var productId;
+                $('#showProduct').hide();
+                $('#basket').hide();
+                $.ajax({
+                    url: ipAddress,
+                    cache: false,
+                    type: 'POST',
+                    data: {
+
+                        'request': 'getProducts'
+
+                    },
+                    dataType: 'json',
+                    success: function (data)
+                    {
+                        for (var i = 0; i < data.resultArray.length; i++) {
+                            $('#dropdowndivs').append('<tr><td>' + data.resultArray[i].ProductDescShort + '<br>' + 'Price' + '&nbsp;' + '&pound' + data.resultArray[i].RRP + '<td id= "tdImg">' + "<img src='images/basket.png' width=35px height=35px onclick='viewProduct(" + data.resultArray[i].ProductId + ")'>" + '</td></tr>'
+                                    );
+                        }
+                        productId = data.resultArray[i].ProductId;
+                    },
+                    error: function (data)
+                    {
+
+                        alert('error in calling ajax page');
+                    }
+
+                });
+
+            }
+            document.addEventListener("deviceready", onDeviceReady, false);
+
+            function viewProduct(productId)
+            {
+
+                $('#showProduct').show();
+                $('#wrapper1').hide();
+                //$('#popUp').show();
+                productData(productId);
+            }
+            var qty;
+            var price;
+            var totsValue = 0;
+
+            function productData(productId)
+            {
+
+                $.ajax({
+                    url: ipAddress,
+                    cache: false,
+                    type: 'POST',
+                    data: {
+
+                        'request': 'getSpecificProduct',
+                        'ProductId': productId
+
+                    },
+                    dataType: 'json',
+                    success: function (data)
+                    {
+
+                        $('#productBasket').append(data.resultArray[0].ProductDescShort + '<br>' + data.resultArray[0].ProductDescLong + 'Price:' + '&pound' + data.resultArray[0].RRP);
+                        $('#imgdiv').append('<img src =' + data.resultArray[0].productImagePath + ' width=120px height=120px > ');
+                        price = data.resultArray[0].RRP;
+                        prodId = productId;
+
+                    },
+                    error: function (data)
+                    {
+
+                        alert('error in calling ajax page');
+                    }
+
+                });
+            }
+
+
+
+            function addtoBaskt() {
+
+                var quantity = $('#quantity').val();
+                //var productId = $('#prodId').val();
+                var price = $('#totalPrice').html();
+//alert(prodId);
+
+                $.ajax({
+
+                    url: ipAddress,
+                    cache: false,
+                    type: 'POST',
+                    data: {
+
+                        'request': 'addProduct',
+                        'ProductId': prodId,
+                        'quantity': quantity,
+                        'price': price
+
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+
+                        $("#dialog-confirm").dialog("open");
+                        $('#dialog-confirm').html("Product has been added to basket!");
+
+                    },
+                    error: function (data)
+                    {
+
+                        alert('error in calling ajax page');
+                    }
+
+                });
+            }
+            function calcValue()
+            {
+                //alert(price);
+                var quantity = $('#quantity').val();
+                //              price = $('#price').val();
+                var Totsvalue = quantity * price;
+
+                //                   alert(Totsvalue);
+                $('#totalPrice').html(Totsvalue);
+            }
+            function Home()
+            {
+                window.location.href = 'index.html';
+            }
+            function viewBasket()
+            {
+                window.location.href = 'basket.html';
+            }
+
+
+
+
+        </script>
+        <style>
+            @-ms-viewport { width: 100vw ; min-zoom: 100% ; zoom: 100% ; }          @viewport { width: 100vw ; min-zoom: 100% zoom: 100% ; }
+            @-ms-viewport { user-zoom: fixed ; min-zoom: 100% ; }                   @viewport { user-zoom: fixed ; min-zoom: 100% ; }
+
+            #wrapper
+            {
+                width: 100%;
+                background-color: F5F5F5;
+                /*                height: 100%;*/
+                font-family: 'Roboto', sans-serif;
+                font-size: 1.3em;
+
+
+            }
+            #header
+            {
+                width: 100%;
+                height: 8%;
+                background-color:#68EFAD;
+                border:2px solid #68EFAD;
+            }
+            #header2
+            {
+                width: 100%;
+                height: 8%;
+                background-color:#68EFAD;
+                border:2px solid #68EFAD;
+            }
+            header3
+            {
+                width: 100%;
+                height: 8%;
+                background-color:#68EFAD;
+                border:2px solid #68EFAD;
+            }
+            #home
+            {
+                width: 100%
+            }
+            #Homebtn
+            {
+                width: 20%;
+                height: 5%;
+                color: white;
+                font-size: 1em;
+                margin-left: 37%;
+                background-color: black;
+                border: none;
+                text-align: left;
+
+
+            }
+            #dropdowndivs
+            {
+
+                width: 50%;
+                height: 100%;
+                font-size: 1em;
+                right: 80%;
+            }
+            #divtester
+            {
+                width: 31%;
+                height: 100%;
+                font-size: 1em;
+                right: 80%;  
+            }
+            .divDropdowns
+            {
+                padding-bottom:10%;
+                border: 1px solid black;
+                border-radius: 12px;
+                text-align: center;
+
+            }
+            h3,h4
+            {
+                font-family: 'Pacifico';
+            }
+            #img
+            {
+                margin-left: 80%; 
+                float: left;
+            }
+            #divBasket
+            {
+                width: 100%;
+                height: 10%;
+                border: 2px solid #adf6d3;
+            }
+            divBasket2
+            {
+                width: 100%;
+                height: 5%;
+                border: 2px solid #adf6d3;
+            }
+            #quantity
+            {
+                width: 40px;    
+            }
+            #btnAdd
+            {
+                background-color: #51eda0;
+            }
+            #tdImg
+            {
+                padding-left: 90%; 
+                border-bottom: 2px solid #51eda0;
+            }
+
+            th
+            {
+                background-color: #adf6d3;
+                width: 100%;
+                padding: 10px;
+
+            }
+            #checkoutBtn
+            {
+                background-color:#51eda0;
+            }
+            td
+            {
+                padding: 10px; 
+                border-bottom: 2px solid #51eda0;
+
+            }
+            #totalPrice
+            {
+                display: inline-block;
+            }
+            #value
+            {
+                margin-left: 77%;
+
+            }
+            #popUp
+            {
+                width: 350px;
+                height: 230px;
+                border: 2px solid #51eda0;
+                padding: 20px;
+                margin-left: 20px;
+            }
+            p
+            {
+                display: inline-block;
+                 font-family: 'Roboto', sans-serif;
+                 font-size: 1.2em;
+            }
+
+
+
+
+        </style>
+
+
+
+
+
+        <link rel="stylesheet" href="css/app.css">
+    </head>
+
+
+    <body>
+
+        <div id='wrapper1'>
+
+            <div id='header'> <h3> Walkers Crisps </h3> </div>
+            <div id="divBasket">  
+                <img id='img' src='images/home.png' style='width:35px;height:35px;' onclick="Home()" >
+                <img id='img2' src='images/basketicon.png' style='width:35px;height:35px;' onclick='viewBasket()'>
+                <div id='products'>
+
+                    <div id='dropdowndivs'> <table></table> </div>
+                    <div id='divtester'> </div>
+
+                </div>
+
+
+            </div>
+        </div>
+        <div id="showProduct">
+
+            <div id='wrapper2'> 
+                <div id='header2'> <h3> Walkers Crisps </h3></div>
+                <div id="divBasket2">   <img id='img' src='images/home.png' style ='width: 35px; height: 35px;' onclick="Home()">
+                    <img id='img2' src='images/basketicon.png' style ='width:35px; height: 35px;' onclick='viewBasket()'>
+
+                </div>
+
+                <div id='prodDets'>
+                    <div id="imgdiv">
+                    </div>
+
+
+                    <div id="productBasket">  </div>
+
+
+                    <label for='quantity'>Quantity</label>
+                    <input type='number' id='quantity' onchange='calcValue()'>
+                    <br>
+                    Total Price &pound;<div id='totalPrice'> </div>
+                    <br>
+                    <button class="btn btn-default" id='btnAdd' onclick="addtoBaskt()"> Add to basket</button>
+
+                    <div id='dialog-confirm'>
+                    </div>
+                </div>
+            </div> 
+        </div>
+        <div id="basket"> 
+            <div id='header'> <h3> Walkers Crisps </h3></div>
+            <div id="divBasket">   <img id='img' src='images/home.png' style ='width: 35px; height: 35px;' onclick="Home()">
+                <img id='img2' src='images/basketicon.png' style ='width:35px; height: 35px;' onclick='viewBasket()'>
+
+            </div>    
+
+            <table id='bsktTable'>
+                <tr> <th id='prodHeadr'> Product </th> <th> Quantity </th> <th> Price </th> </tr>
+
+            </table>
+            <div id='value'></div>
+            <button class="btn btn-default" id='checkoutBtn'> Checkout </button>
+        </div>
+        <script src="cordova.js"></script>        
+
+        <script src="js/app.js"></script>          
+        <script src="js/init-app.js"></script>      
+        <script src="xdk/init-dev.js"></script>   
+
+        <div id="popUp">
+            <h4> Choose a dip</h4>
+            <input type='checkbox'> <p>Salsa </p>
+            <br>
+            <input type ='checkbox' > <p>Sour cream </p>
+      <br>
+            <input type='checkbox'> <p> Garlic sauce </p>
+                   
+        </div>
+
+    </body>
+
+
+</html>
