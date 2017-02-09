@@ -241,38 +241,38 @@ dev.initDeviceReady = function() {
 
     dev.consoleLog(fName, "exit") ;
     
-        function viewBasket()
-        {
-            $.ajax({
-
-                url: 'ajax/app_ajax.php',
-                cache: false,
-                type: 'POST',
-                data: {
-
-                    'request': 'viewBasket',
-
-                },
-                dataType: 'json',
-                success: function (data)
-                {
-                    for (var i = 0; i < data.resultArray.length; i++) {
-                        $('#basket').append('<tr><td>' + data.resultArray[i].ProductDescShort + '<td>' + 'Qty' + data.resultArray[i].quantity + '<td>' + 'Price'  + data.resultArray[i].price + '</tr></td>');
-                    };
-                    $('#prodDets').hide();
-                },
-                error: function (data)
-                {
-
-                    alert('error in calling ajax page');
-                }
-
-            });
-        }
-           function Home()
-            {
-                window.location.href = 'appHomepage.php';
-            }
+//        function viewBasket()
+//        {
+//            $.ajax({
+//
+//                url: 'ajax/app_ajax.php',
+//                cache: false,
+//                type: 'POST',
+//                data: {
+//
+//                    'request': 'viewBasket',
+//
+//                },
+//                dataType: 'json',
+//                success: function (data)
+//                {
+//                    for (var i = 0; i < data.resultArray.length; i++) {
+//                        $('#basket').append('<tr><td>' + data.resultArray[i].ProductDescShort + '<td>' + 'Qty' + data.resultArray[i].quantity + '<td>' + 'Price'  + data.resultArray[i].price + '</tr></td>');
+//                    };
+//                    $('#prodDets').hide();
+//                },
+//                error: function (data)
+//                {
+//
+//                    alert('error in calling ajax page');
+//                }
+//
+//            });
+//        }
+//           function Home()
+//            {
+//                window.location.href = 'appHomepage.php';
+//            }
          
 } ;
 
